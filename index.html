@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球 AI 大模型发布时间线 2021-2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e17; font-family: 'Noto Sans SC', 'SF Pro Display', -apple-system, sans-serif; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const companies = [
+  { id: "openai", name: "OpenAI", color: "#10a37f" },
+  { id: "anthropic", name: "Anthropic", color: "#d4a574" },
+  { id: "google", name: "Google", color: "#4285f4" },
+  { id: "meta", name: "Meta Llama", color: "#0668E1" },
+  { id: "xai", name: "xAI Grok", color: "#e8e8e8" },
+  { id: "deepseek", name: "DeepSeek", color: "#5b6abf" },
+  { id: "minimax", name: "MiniMax", color: "#e85d75" },
+  { id: "zhipu", name: "智谱AI", color: "#00b4d8" },
+  { id: "qwen", name: "阿里千问", color: "#ff6b35" },
+  { id: "kimi", name: "Kimi", color: "#9b5de5" },
+];
+
+const typeColors = {
+  "旗舰":"#e0e6f0","生图":"#f472b6","视频":"#a78bfa","推理":"#fbbf24",
+  "代码":"#34d399","轻量":"#93c5fd","对话":"#c4b5fd","开源":"#6ee7b7",
+  "基座":"#94a3b8","更新":"#78716c","语音":"#fb923c","多模态":"#e879f9","安全":"#ef4444",
+};
+
+const releases = [
+  {company:"openai",date:"2021-01",name:"DALL·E",type:"生图"},{company:"openai",date:"2021-08",name:"Codex",type:"代码"},
+  {company:"openai",date:"2022-04",name:"DALL·E 2",type:"生图"},{company:"openai",date:"2022-09",name:"Whisper",type:"语音"},
+  {company:"openai",date:"2022-11",name:"ChatGPT (GPT-3.5)",type:"旗舰"},
+  {company:"openai",date:"2023-03",name:"GPT-4",type:"旗舰"},{company:"openai",date:"2023-10",name:"DALL·E 3",type:"生图"},
+  {company:"openai",date:"2023-11",name:"GPT-4 Turbo",type:"旗舰"},
+  {company:"openai",date:"2024-05",name:"GPT-4o",type:"旗舰"},{company:"openai",date:"2024-07",name:"GPT-4o mini",type:"轻量"},
+  {company:"openai",date:"2024-09",name:"o1 / o1-mini",type:"推理"},{company:"openai",date:"2024-12",name:"o3 / Sora 视频",type:"推理"},
+  {company:"openai",date:"2025-01",name:"o3-mini",type:"推理"},{company:"openai",date:"2025-04",name:"GPT-4.1 / o4-mini",type:"旗舰"},
+  {company:"openai",date:"2025-08",name:"GPT-5",type:"旗舰"},{company:"openai",date:"2025-10",name:"GPT-5 Pro / Sora 2",type:"旗舰"},
+  {company:"openai",date:"2025-11",name:"GPT-5.1",type:"旗舰"},{company:"openai",date:"2025-12",name:"GPT-5.2 / GPT Image 1.5",type:"旗舰"},
+  {company:"openai",date:"2026-03",name:"GPT-5.4 / GPT-5.3",type:"旗舰"},
+  {company:"openai",date:"2026-04",name:"GPT-5.5",type:"旗舰",hl:true},{company:"openai",date:"2026-04",name:"GPT Image 2",type:"生图",hl:true},
+  {company:"anthropic",date:"2023-03",name:"Claude 1.0",type:"旗舰"},{company:"anthropic",date:"2023-07",name:"Claude 2",type:"旗舰"},
+  {company:"anthropic",date:"2023-11",name:"Claude 2.1",type:"旗舰"},
+  {company:"anthropic",date:"2024-03",name:"Claude 3 (Opus/Sonnet/Haiku)",type:"旗舰"},
+  {company:"anthropic",date:"2024-06",name:"Claude 3.5 Sonnet",type:"旗舰"},
+  {company:"anthropic",date:"2024-10",name:"Claude 3.5 Sonnet v2 / Haiku",type:"旗舰"},
+  {company:"anthropic",date:"2025-02",name:"Claude 3.7 Sonnet",type:"旗舰"},
+  {company:"anthropic",date:"2025-05",name:"Claude 4 Opus / Sonnet",type:"旗舰"},
+  {company:"anthropic",date:"2025-09",name:"Claude Sonnet 4.5",type:"旗舰"},{company:"anthropic",date:"2025-10",name:"Claude Haiku 4.5",type:"轻量"},
+  {company:"anthropic",date:"2026-02",name:"Claude Opus 4.6 / Sonnet 4.6",type:"旗舰"},
+  {company:"anthropic",date:"2026-04",name:"Claude Mythos Preview",type:"安全",hl:true},{company:"anthropic",date:"2026-04",name:"Claude Opus 4.7",type:"旗舰",hl:true},
+  {company:"google",date:"2022-04",name:"PaLM / Imagen",type:"基座"},{company:"google",date:"2023-02",name:"Bard (LaMDA)",type:"对话"},
+  {company:"google",date:"2023-05",name:"PaLM 2",type:"基座"},{company:"google",date:"2023-12",name:"Gemini 1.0 / Imagen 2",type:"旗舰"},
+  {company:"google",date:"2024-02",name:"Gemini 1.5 Pro / Gemma",type:"旗舰"},{company:"google",date:"2024-05",name:"Gemini 1.5 Flash",type:"轻量"},
+  {company:"google",date:"2024-10",name:"Imagen 3",type:"生图"},{company:"google",date:"2024-12",name:"Gemini 2.0 Flash",type:"旗舰"},
+  {company:"google",date:"2025-02",name:"Gemini 2.0 Pro",type:"旗舰"},{company:"google",date:"2025-03",name:"Gemini 2.5 Pro (exp)",type:"旗舰"},
+  {company:"google",date:"2025-06",name:"Gemini 2.5 Flash",type:"轻量"},{company:"google",date:"2025-08",name:"Nano Banana (2.5 Flash Image)",type:"生图"},
+  {company:"google",date:"2025-12",name:"Gemini 3 Flash",type:"旗舰"},{company:"google",date:"2026-02",name:"Gemini 3.1 Pro / Nano Banana 2",type:"旗舰"},
+  {company:"meta",date:"2023-02",name:"LLaMA 1 (研究开放)",type:"基座"},{company:"meta",date:"2023-07",name:"Llama 2 (7B/13B/70B 开源)",type:"开源"},
+  {company:"meta",date:"2024-04",name:"Llama 3 (8B/70B)",type:"开源"},{company:"meta",date:"2024-07",name:"Llama 3.1 (含405B)",type:"开源"},
+  {company:"meta",date:"2024-09",name:"Llama 3.2 (1B-90B 多模态)",type:"多模态"},{company:"meta",date:"2024-12",name:"Llama 3.3 (70B)",type:"更新"},
+  {company:"meta",date:"2025-04",name:"Llama 4 Scout / Maverick (MoE)",type:"旗舰"},{company:"meta",date:"2025-07",name:"Meta Imagine 视频生成",type:"视频"},
+  {company:"xai",date:"2023-11",name:"Grok-1 (314B MoE)",type:"旗舰"},{company:"xai",date:"2024-03",name:"Grok-1.5 (128K)",type:"旗舰"},
+  {company:"xai",date:"2024-08",name:"Grok-2 / Grok-2 mini",type:"旗舰"},{company:"xai",date:"2024-12",name:"Aurora 生图",type:"生图"},
+  {company:"xai",date:"2025-02",name:"Grok-3",type:"旗舰"},{company:"xai",date:"2025-07",name:"Grok-4 / Grok Imagine 视频",type:"旗舰"},
+  {company:"xai",date:"2025-09",name:"Grok-4.1",type:"更新"},{company:"xai",date:"2025-11",name:"Grok-4.1 Fast",type:"轻量"},
+  {company:"xai",date:"2026-01",name:"Grok Imagine API",type:"生图"},{company:"xai",date:"2026-03",name:"Grok-4.20 Beta 2",type:"旗舰"},
+  {company:"deepseek",date:"2024-01",name:"DeepSeek-MoE",type:"基座"},{company:"deepseek",date:"2024-05",name:"DeepSeek-V2",type:"旗舰"},
+  {company:"deepseek",date:"2024-06",name:"DeepSeek-Coder V2",type:"代码"},{company:"deepseek",date:"2024-09",name:"DeepSeek-V2.5",type:"旗舰"},
+  {company:"deepseek",date:"2024-12",name:"DeepSeek-V3",type:"旗舰"},{company:"deepseek",date:"2025-01",name:"DeepSeek-R1",type:"推理"},
+  {company:"deepseek",date:"2025-03",name:"DeepSeek-V3-0324",type:"更新"},{company:"deepseek",date:"2025-05",name:"DeepSeek-R1-0528 / Prover-V2",type:"推理"},
+  {company:"deepseek",date:"2025-08",name:"DeepSeek-V3.1",type:"旗舰"},{company:"deepseek",date:"2025-12",name:"DeepSeek-V3.2",type:"旗舰"},
+  {company:"deepseek",date:"2026-04",name:"DeepSeek-V4 / V4-Pro",type:"旗舰",hl:true},
+  {company:"minimax",date:"2023-08",name:"abab 大模型 (开放)",type:"基座"},{company:"minimax",date:"2024-04",name:"abab 6.5",type:"旗舰"},
+  {company:"minimax",date:"2024-09",name:"video-01 / music-01",type:"视频"},{company:"minimax",date:"2025-01",name:"MiniMax-Text-01 / VL-01",type:"旗舰"},
+  {company:"minimax",date:"2025-06",name:"MiniMax-M1 / 海螺AI 2.0",type:"视频"},{company:"minimax",date:"2025-10",name:"MiniMax-M2",type:"旗舰"},
+  {company:"minimax",date:"2025-12",name:"MiniMax-M2.1",type:"更新"},{company:"minimax",date:"2026-02",name:"MiniMax-M2.5",type:"旗舰"},
+  {company:"minimax",date:"2026-03",name:"MiniMax-M2.7 / Music 2.5",type:"旗舰"},
+  {company:"zhipu",date:"2022-08",name:"GLM-130B (开源)",type:"基座"},{company:"zhipu",date:"2023-03",name:"ChatGLM / CogView",type:"对话"},
+  {company:"zhipu",date:"2023-06",name:"ChatGLM-2",type:"对话"},{company:"zhipu",date:"2023-10",name:"ChatGLM-3",type:"对话"},
+  {company:"zhipu",date:"2024-01",name:"GLM-4",type:"旗舰"},{company:"zhipu",date:"2024-06",name:"GLM-4-9B / CogView-3",type:"开源"},
+  {company:"zhipu",date:"2024-07",name:"CogVideoX / 清影",type:"视频"},{company:"zhipu",date:"2024-08",name:"GLM-4-Plus",type:"旗舰"},
+  {company:"zhipu",date:"2024-10",name:"GLM-4-Voice",type:"语音"},{company:"zhipu",date:"2025-03",name:"CogView-4 (开源生图)",type:"生图"},
+  {company:"zhipu",date:"2025-07",name:"GLM-4.5",type:"旗舰"},{company:"zhipu",date:"2025-09",name:"GLM-4.6",type:"旗舰"},
+  {company:"zhipu",date:"2025-12",name:"GLM-4.7",type:"旗舰"},{company:"zhipu",date:"2026-02",name:"GLM-5",type:"旗舰"},
+  {company:"zhipu",date:"2026-03",name:"GLM-5 Turbo / GLM-5.1",type:"旗舰"},
+  {company:"qwen",date:"2023-04",name:"通义千问 (内测)",type:"对话"},{company:"qwen",date:"2023-07",name:"通义万相 Wan 生图",type:"生图"},
+  {company:"qwen",date:"2023-08",name:"Qwen-7B (开源)",type:"开源"},{company:"qwen",date:"2023-09",name:"通义千问 公众开放",type:"对话"},
+  {company:"qwen",date:"2024-02",name:"Qwen 1.5 系列",type:"旗舰"},{company:"qwen",date:"2024-06",name:"Qwen 2 系列",type:"旗舰"},
+  {company:"qwen",date:"2024-09",name:"Qwen 2.5 系列",type:"旗舰"},{company:"qwen",date:"2024-11",name:"QwQ-32B-Preview",type:"推理"},
+  {company:"qwen",date:"2025-02",name:"Wan 2.1 视频 (开源)",type:"视频"},{company:"qwen",date:"2025-04",name:"Qwen 3 系列 (开源)",type:"旗舰"},
+  {company:"qwen",date:"2025-07",name:"Wan 2.2 视频",type:"视频"},{company:"qwen",date:"2025-09",name:"Qwen3-Max / Wan 2.5",type:"推理"},
+  {company:"qwen",date:"2025-12",name:"Wan 2.6 视频",type:"视频"},{company:"qwen",date:"2026-01",name:"Qwen3-Max 更新",type:"旗舰"},
+  {company:"qwen",date:"2026-02",name:"Qwen 3.5 系列",type:"旗舰"},
+  {company:"kimi",date:"2023-10",name:"Kimi Chat (128K)",type:"对话"},{company:"kimi",date:"2024-03",name:"Kimi 200万字上下文",type:"更新"},
+  {company:"kimi",date:"2025-01",name:"Kimi K1.5",type:"推理"},{company:"kimi",date:"2025-02",name:"Kimi Latest",type:"更新"},
+  {company:"kimi",date:"2025-04",name:"Kimi-VL (开源多模态)",type:"多模态"},{company:"kimi",date:"2025-06",name:"Kimi-Dev-72B",type:"代码"},
+  {company:"kimi",date:"2025-07",name:"Kimi K2 (1T MoE 开源)",type:"旗舰"},
+  {company:"kimi",date:"2026-01",name:"Kimi K2.5 (多模态)",type:"旗舰"},{company:"kimi",date:"2026-04",name:"Kimi K2.6 Code Preview",type:"代码",hl:true},
+];
+
+const parseDate = (d) => { const [y,m]=d.split("-").map(Number); return new Date(y,m-1).getTime(); };
+const months = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+
+function AITimeline() {
+  const [sel, setSel] = useState(new Set(companies.map(c=>c.id)));
+  const [hov, setHov] = useState(null);
+  const [mode, setMode] = useState("timeline");
+  const [tf, setTf] = useState("all");
+
+  const cMap = useMemo(()=>{ const m={}; companies.forEach(c=>m[c.id]=c.color); return m; },[]);
+  const nMap = useMemo(()=>{ const m={}; companies.forEach(c=>m[c.id]=c.name); return m; },[]);
+
+  const toggle = id => setSel(p => { const n=new Set(p); n.has(id)?n.delete(id):n.add(id); return n; });
+  const filtered = releases.filter(r => sel.has(r.company) && (tf==="all"||r.type===tf));
+
+  const freqData = useMemo(()=>{
+    const P=[{l:"21H1",s:"2021-01",e:"2021-06"},{l:"21H2",s:"2021-07",e:"2021-12"},{l:"22H1",s:"2022-01",e:"2022-06"},{l:"22H2",s:"2022-07",e:"2022-12"},{l:"23H1",s:"2023-01",e:"2023-06"},{l:"23H2",s:"2023-07",e:"2023-12"},{l:"24H1",s:"2024-01",e:"2024-06"},{l:"24H2",s:"2024-07",e:"2024-12"},{l:"25H1",s:"2025-01",e:"2025-06"},{l:"25H2",s:"2025-07",e:"2025-12"},{l:"26H1",s:"2026-01",e:"2026-06"}];
+    return P.map(p=>{const ps=parseDate(p.s),pe=parseDate(p.e),counts={};companies.forEach(c=>{counts[c.id]=releases.filter(r=>r.company===c.id&&parseDate(r.date)>=ps&&parseDate(r.date)<=pe).length;});return{...p,counts};});
+  },[]);
+  const totals = useMemo(()=>freqData.map(p=>{let t=0;companies.forEach(c=>{if(sel.has(c.id))t+=p.counts[c.id];});return t;}),[freqData,sel]);
+  const maxT = Math.max(...totals,1);
+  const groups = useMemo(()=>{const g={};filtered.forEach(r=>{if(!g[r.date])g[r.date]=[];g[r.date].push(r);});return Object.entries(g).sort(([a],[b])=>a.localeCompare(b));},[filtered]);
+
+  const B = {
+    co:(a,c)=>({padding:"4px 10px",borderRadius:16,border:`1.5px solid ${a?c:"#2a3348"}`,background:a?c+"18":"transparent",color:a?c:"#5a6a88",fontSize:11,fontWeight:600,cursor:"pointer"}),
+    tf:(a,c)=>({padding:"3px 7px",borderRadius:5,border:"none",background:a?"#2a3a5a":"#111827",color:a?(c||"#c4d6ff"):"#4a5a78",fontSize:10,fontWeight:600,cursor:"pointer"}),
+    vm:(a)=>({padding:"5px 13px",borderRadius:7,border:"none",background:a?"linear-gradient(135deg,#3a4f7a,#2a3a5a)":"#141b2d",color:a?"#c4d6ff":"#5a6a88",fontSize:12,fontWeight:600,cursor:"pointer"}),
+  };
+
+  return (
+    <div style={{fontFamily:"'Noto Sans SC','SF Pro Display',-apple-system,sans-serif",background:"#0a0e17",color:"#e0e6f0",minHeight:"100vh",padding:"20px 14px"}}>
+      <div style={{maxWidth:1120,margin:"0 auto"}}>
+        <h1 style={{fontSize:22,fontWeight:700,margin:"0 0 2px",background:"linear-gradient(135deg,#7eb8ff,#c4a3ff,#ffb3c6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>全球 AI 大模型发布时间线</h1>
+        <p style={{color:"#7a8ba8",fontSize:11,margin:"0 0 14px"}}>2021 — 2026.4 · 10家公司 · {releases.length} 个主要版本 · 含语言/生图/视频/推理模型</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:8}}>{companies.map(c=>{const a=sel.has(c.id);return <button key={c.id} onClick={()=>toggle(c.id)} style={B.co(a,c.color)}><span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:a?c.color:"#3a4a68",marginRight:4,verticalAlign:"middle"}}/>{c.name}</button>;})}</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:8}}>{["all","旗舰","生图","视频","推理","代码","轻量","开源","安全","语音","多模态"].map(t=><button key={t} onClick={()=>setTf(t)} style={B.tf(tf===t,t==="all"?null:typeColors[t])}>{t==="all"?"全部":t}</button>)}</div>
+        <div style={{display:"flex",gap:4,marginBottom:18}}>{[["timeline","📅 时间线"],["frequency","📊 发布频率"]].map(([k,l])=><button key={k} onClick={()=>setMode(k)} style={B.vm(mode===k)}>{l}</button>)}</div>
+
+        {mode==="frequency" && <div>
+          <h2 style={{fontSize:15,fontWeight:600,marginBottom:10,color:"#a0b4d4"}}>半年度发布频率（含所有模型类型）</h2>
+          <div style={{overflowX:"auto"}}><div style={{minWidth:620}}>
+            <div style={{display:"flex",alignItems:"flex-end",gap:4,height:230,borderBottom:"1px solid #1e2a42"}}>
+              {freqData.map((p,i)=>{const t=totals[i],bH=t>0?(t/maxT)*195:0;const segs=[];companies.forEach(c=>{if(sel.has(c.id)&&p.counts[c.id]>0)segs.push({id:c.id,n:p.counts[c.id],c:c.color});});return <div key={p.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center"}}><span style={{fontSize:11,fontWeight:700,color:"#c4d6ff",marginBottom:2}}>{t>0?t:""}</span><div style={{width:"65%",height:bH,borderRadius:"4px 4px 0 0",overflow:"hidden",display:"flex",flexDirection:"column-reverse"}}>{segs.map((s,si)=><div key={s.id} title={`${nMap[s.id]}: ${s.n}`} style={{height:t>0?(s.n/t)*bH:0,background:s.c,opacity:0.85,borderTop:si>0?"1px solid #0a0e17":"none"}}/>)}</div></div>;})}
+            </div>
+            <div style={{display:"flex",gap:4,marginTop:4}}>{freqData.map(p=><div key={p.l} style={{flex:1,textAlign:"center",fontSize:9,color:"#5a6a88"}}>{p.l}</div>)}</div>
+          </div></div>
+          <div style={{marginTop:18,padding:"14px 16px",background:"#111827",borderRadius:10,border:"1px solid #1e2a42",lineHeight:1.7,fontSize:12,color:"#a0b4d4"}}>
+            <h3 style={{fontSize:13,color:"#c4d6ff",margin:"0 0 8px"}}>📈 趋势分析</h3>
+            <p style={{margin:"0 0 6px"}}><strong style={{color:"#7eb8ff"}}>2021–2022（萌芽期）：</strong>半年 1–3 版。OpenAI 探索 DALL·E/Whisper，Google 发布 PaLM/Imagen，智谱开源 GLM-130B。</p>
+            <p style={{margin:"0 0 6px"}}><strong style={{color:"#7eb8ff"}}>2023（爆发元年）：</strong>ChatGPT 引爆后密集入场。Meta 开源 Llama 1→2，xAI 推出 Grok-1。半年 8+ 版。</p>
+            <p style={{margin:"0 0 6px"}}><strong style={{color:"#7eb8ff"}}>2024（多模态全面展开）：</strong>Meta Llama 3→3.2 四连发，xAI Grok-2 + Aurora 生图。半年 12+ 版。</p>
+            <p style={{margin:"0 0 6px"}}><strong style={{color:"#7eb8ff"}}>2025（军备竞赛期）：</strong>Grok 从 3→4→4.1 三连跳，DeepSeek R1 震动市场。半年 18+ 版。</p>
+            <p style={{margin:0}}><strong style={{color:"#f472b6"}}>2026 Q1-Q2（指数加速 🔥）：</strong>仅 4 个月 20+ 重大发布。GPT-5.4→5.5 仅隔 6 周。</p>
+          </div>
+        </div>}
+
+        {mode==="timeline" && <div style={{position:"relative"}}>
+          <div style={{position:"absolute",left:72,top:0,bottom:0,width:2,background:"linear-gradient(to bottom,#1e2a42,#3a4f7a,#1e2a42)"}}/>
+          {groups.map(([date,items],gi)=>{
+            const [y,m]=date.split("-").map(Number);
+            const prevDate=gi>0?groups[gi-1][0]:null;
+            const prevY=prevDate?parseInt(prevDate.split("-")[0]):null;
+            const showYear=gi===0||y!==prevY;
+            return <div key={date} style={{position:"relative",marginBottom:2}}>
+              {showYear && <div style={{marginTop:gi>0?24:0,marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
+                <div style={{fontSize:28,fontWeight:900,letterSpacing:"3px",background:`linear-gradient(135deg,${y<=2023?"#3a5a8a":y<=2024?"#4a6a9a":y<=2025?"#5a7aaa":"#7eb8ff"},transparent)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{y}</div>
+                <div style={{flex:1,height:1,background:`linear-gradient(to right,${y>=2025?"#3a5a8a":"#1e2a42"},transparent)`}}/>
+                <div style={{fontSize:10,color:"#4a5a78",fontWeight:500}}>{y===2021?"萌芽期":y===2022?"萌芽期":y===2023?"爆发元年":y===2024?"多模态元年":y===2025?"军备竞赛":y===2026?"指数加速":""}</div>
+              </div>}
+              <div style={{display:"flex",alignItems:"flex-start",marginBottom:1}}>
+                <div style={{width:60,textAlign:"right",paddingRight:14,paddingTop:5,fontSize:10,color:"#5a6a88",fontWeight:500,flexShrink:0}}>{months[m-1]}</div>
+                <div style={{width:8,height:8,borderRadius:"50%",background:"#3a5a8a",border:"2px solid #0a0e17",marginTop:7,marginRight:11,flexShrink:0,zIndex:1}}/>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,paddingBottom:4,flex:1}}>
+                  {items.map((r,ri)=>{const h=hov===`${date}-${ri}`;const tC=typeColors[r.type]||"#94a3b8";return <div key={ri} onMouseEnter={()=>setHov(`${date}-${ri}`)} onMouseLeave={()=>setHov(null)} style={{padding:"5px 9px",background:h?cMap[r.company]+"20":r.hl?"#1a1f35":"#111827",border:`1px solid ${h?cMap[r.company]+"60":r.hl?"#3a4f7a":"#1e2a42"}`,borderRadius:7,borderLeft:`3px solid ${cMap[r.company]}`,cursor:"default",transition:"all 0.15s",maxWidth:290,transform:h?"translateY(-1px)":"none",boxShadow:r.hl?`0 0 10px ${cMap[r.company]}12`:"none"}}><div style={{fontSize:9,color:cMap[r.company],fontWeight:600,marginBottom:1,display:"flex",alignItems:"center",gap:4}}>{nMap[r.company]}<span style={{fontSize:8,padding:"0.5px 4px",borderRadius:3,background:tC+"18",color:tC,fontWeight:700}}>{r.type}</span>{r.hl&&<span style={{fontSize:7,padding:"0.5px 3px",borderRadius:3,background:"#fbbf2420",color:"#fbbf24",fontWeight:700}}>NEW</span>}</div><div style={{fontSize:11,fontWeight:600,color:"#d0daf0"}}>{r.name}</div></div>;})}
+                </div>
+              </div>
+            </div>;
+          })}
+        </div>}
+
+        <div style={{marginTop:24,padding:"10px 14px",background:"#111827",borderRadius:8,border:"1px solid #1e2a42"}}>
+          <div style={{fontSize:10,color:"#7a8ba8",fontWeight:600,marginBottom:5}}>模型类型</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>{Object.entries(typeColors).map(([t,c])=><div key={t} style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:8,height:8,borderRadius:2,background:c+"30",border:`1px solid ${c}50`,display:"inline-block"}}/><span style={{fontSize:9.5,color:c}}>{t}</span></div>)}</div>
+        </div>
+        <div style={{marginTop:14,paddingTop:10,borderTop:"1px solid #1e2a42",fontSize:9,color:"#3a4f6a",textAlign:"center"}}>数据截至 2026年4月24日 · 10家公司 · 来源：各公司官方公告及公开报道</div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<AITimeline />, document.getElementById('root'));
+</script>
+</body>
+</html>
