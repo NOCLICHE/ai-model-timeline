@@ -2,7 +2,7 @@
 
 **2021 → 2026.4 · 10 家公司 · 125+ 个主要版本 · 含语言/生图/视频/推理模型**
 
-> 📊 交互式可视化，在线查看 👉 [**点击打开 Live Demo**](https://你的用户名.github.io/ai-model-timeline/)
+> 📊 交互式可视化，在线查看 👉 [**点击打开 Live Demo**](https://nocliche.github.io/ai-model-timeline/)
 
 ---
 
@@ -60,7 +60,7 @@ README.md           ← 本文件
 
 ## 🚀 使用方式
 
-**在线访问：** 直接打开 [GitHub Pages 链接](https://你的用户名.github.io/ai-model-timeline/)
+**在线访问：** 直接打开 [GitHub Pages 链接](https://nocliche.github.io/ai-model-timeline/)
 
 **本地查看：** 下载 `index.html`，双击用浏览器打开即可
 
